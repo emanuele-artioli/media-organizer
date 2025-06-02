@@ -72,38 +72,26 @@ Miniconda is a free tool that makes Python setup easy.
 
 ## Step 2: Set Up the Python Environment
 
-1. Open your terminal (or Anaconda Prompt on Windows).
-2. Create a new environment:
+1. **Open your terminal** (or Anaconda Prompt on Windows).
+2. **Navigate to the project folder** (where `environment.yml` is located):
 
    ```
-   conda create -n media-env python=3.9
+   cd /Users/manu/Desktop/media-organizer
    ```
 
-3. Activate the environment:
+3. **Create the environment from the YAML file**:
 
    ```
-   conda activate media-env
+   conda env create -f environment.yml
    ```
 
-4. Install required packages:
+4. **Activate the environment**:
 
    ```
-   conda install pip
-   pip install pillow ffmpeg-python
+   conda activate media_organizer
    ```
 
-5. **Install ffmpeg** (required for video/audio compression):
-
-   - **macOS**:  
-     ```
-     brew install ffmpeg
-     ```
-   - **Windows**:  
-     Download from [ffmpeg.org](https://ffmpeg.org/download.html), extract, and add the `bin` folder to your PATH.
-   - **Linux**:  
-     ```
-     sudo apt-get install ffmpeg
-     ```
+That's it! All required packages (including ffmpeg, Pillow, and others) will be installed automatically.
 
 ---
 
