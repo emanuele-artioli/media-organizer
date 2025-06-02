@@ -1,0 +1,24 @@
+name: media_organizer
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - ffmpeg
+  - opencv
+  - pillow
+  - pydub
+  - imagehash
+  - numpy
+  - scipy
+  - scikit-image
+  - scikit-learn
+  - tqdm
+  - matplotlib
+  - ipykernel  # For Jupyter support
+  - pip
+  - pip:
+      - ffmpeg-python
+      - open_clip_torch
+      - torch  # Needed for CLIP
+      - torchvision
