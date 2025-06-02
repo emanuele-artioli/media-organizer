@@ -1,6 +1,6 @@
 # media-organizer
 
-A simple Python script to help you copy media files from an external hard drive to your Desktop, and create zipped archives of folders for easy backup.
+Automatically compress and organize your large media collections—photos, videos, and audio—without losing metadata or noticeable quality.
 
 ---
 
@@ -8,13 +8,13 @@ A simple Python script to help you copy media files from an external hard drive 
 
 - [Overview](#overview)
 - [Features](#features)
+- [How It Works](#how-it-works)
 - [Requirements](#requirements)
 - [Step 1: Install Miniconda](#step-1-install-miniconda)
 - [Step 2: Set Up the Python Environment](#step-2-set-up-the-python-environment)
 - [Step 3: Download the Script](#step-3-download-the-script)
-- [Step 4: Configure the Script](#step-4-configure-the-script)
-- [Step 5: Run the Script](#step-5-run-the-script)
-- [How the Script Works](#how-the-script-works)
+- [Step 4: Run the Script](#step-4-run-the-script)
+- [Advanced Usage](#advanced-usage)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 
@@ -22,16 +22,30 @@ A simple Python script to help you copy media files from an external hard drive 
 
 ## Overview
 
-This project provides a script to automate copying files from an external hard drive to your Desktop, and to create zipped archives of folders for backup or sharing.
+**media-organizer** is a Python tool that scans a folder (and all its subfolders) for large media files—images, videos, and audio—and compresses them automatically. It only overwrites files if the compressed version is smaller and preserves all metadata (like EXIF for photos and timestamps for all files). This helps you reclaim disk space without sacrificing quality or losing important information.
 
 ---
 
 ## Features
 
-- **Copy all files** from a specified folder (e.g., an external hard drive) to your Desktop.
-- **Skips files** that already exist and are identical.
-- **Overwrites files** if the source and destination differ in size.
-- **Creates zipped archives** of any folder, saving the archive to your Desktop.
+- **Automatic compression** of images, videos, and audio files.
+- **Preserves metadata** (EXIF, timestamps, etc.).
+- **No quality loss**: Uses smart compression settings to keep files looking and sounding great.
+- **Skips files** if compression would not save space.
+- **Processes entire folders recursively**, sorting by file size (largest first).
+- **Cross-platform**: Works on Windows, macOS, and Linux.
+
+---
+
+## How It Works
+
+1. You specify a folder containing your media files.
+2. The script finds all supported files above a certain size (default: 5 MB).
+3. Each file is compressed using the best available method for its type:
+   - **Images**: JPEG/WebP compression via Pillow.
+   - **Videos & Audio**: ffmpeg with smart settings.
+4. If the compressed file is smaller, it replaces the original (keeping metadata).
+5. If not, the original is kept.
 
 ---
 
@@ -45,77 +59,106 @@ This project provides a script to automate copying files from an external hard d
 
 ## Step 1: Install Miniconda
 
-Miniconda is a free minimal installer for the [conda](https://docs.conda.io/en/latest/) package manager. It makes managing Python environments easy.
+Miniconda is a free tool that makes Python setup easy.
 
 1. Go to the [Miniconda download page](https://docs.conda.io/en/latest/miniconda.html).
-2. Download the installer for your operating system (Windows, macOS, or Linux).
-3. Run the installer and follow the instructions.  
-   - On Windows: Double-click the `.exe` file.
-   - On macOS/Linux: Open Terminal, navigate to the download location, and run `bash Miniconda3-latest-...sh`.
-4. After installation, close and reopen your terminal (or Anaconda Prompt on Windows).
+2. Download the installer for your operating system.
+3. Run the installer:
+   - **Windows**: Double-click the `.exe` file.
+   - **macOS/Linux**: Open Terminal, navigate to the download location, and run `bash Miniconda3-latest-...sh`.
+4. After installation, close and reopen your terminal.
 
 ---
 
 ## Step 2: Set Up the Python Environment
 
 1. Open your terminal (or Anaconda Prompt on Windows).
-2. Create a new environment named `media-env` with Python 3.9:
-   ```bash
+2. Create a new environment:
+
+   ```
    conda create -n media-env python=3.9
    ```
+
 3. Activate the environment:
-   - On Windows:
-     ```bash
-     conda activate media-env
+
+   ```
+   conda activate media-env
+   ```
+
+4. Install required packages:
+
+   ```
+   conda install pip
+   pip install pillow ffmpeg-python
+   ```
+
+5. **Install ffmpeg** (required for video/audio compression):
+
+   - **macOS**:  
      ```
-   - On macOS/Linux:
-     ```bash
-     source activate media-env
+     brew install ffmpeg
+     ```
+   - **Windows**:  
+     Download from [ffmpeg.org](https://ffmpeg.org/download.html), extract, and add the `bin` folder to your PATH.
+   - **Linux**:  
+     ```
+     sudo apt-get install ffmpeg
      ```
 
 ---
 
 ## Step 3: Download the Script
 
-Download the `copy_media.py` script from the [GitHub repository](https://github.com/yourusername/media-organizer).
+1. Download or clone this repository.
+2. Locate `media_organizer.py`.
 
 ---
 
-## Step 4: Configure the Script
+## Step 4: Run the Script
 
-1. Open the `copy_media.py` script in a text editor.
-2. Set the `SOURCE_FOLDER` variable to the path of your external hard drive.
-3. Set the `DESTINATION_FOLDER` variable to your Desktop path.
-4. Save and close the file.
+1. Make sure your environment is activated:
 
----
-
-## Step 5: Run the Script
-
-1. Open your terminal (or Anaconda Prompt on Windows).
-2. Navigate to the folder where you downloaded `copy_media.py`.
-3. Run the script:
-   ```bash
-   python copy_media.py
+   ```
+   conda activate media-env
    ```
 
+2. Run the script, specifying the folder you want to compress:
+
+   ```
+   python media_organizer.py
+   ```
+
+   By default, it will process `/Users/manu/Desktop/2020` (edit the last line in the script to change this).
+
 ---
 
-## How the Script Works
+## Advanced Usage
 
-The script uses the `shutil` and `os` modules to copy files and create archives. It compares file sizes to determine if a file should be overwritten. Zipped archives are created using the `zipfile` module.
+You can customize:
+- **Target folder**: Change the path in the `main()` call at the bottom of `media_organizer.py`.
+- **Compression ratio**: Lower values save more space (default is 70, meaning compressed files will be ≤70% of the original size).
+- **Minimum file size**: Only files larger than this (in MB) will be processed.
+
+Example:
+```python
+main("/path/to/your/folder", compression_ratio=60, min_size_mb=2)
+```
 
 ---
 
 ## Troubleshooting
 
-- **Script fails to run**: Ensure Python is correctly installed and the environment is activated.
-- **Permission errors**: Run the terminal or Anaconda Prompt as an administrator (Windows) or use `sudo` (macOS/Linux).
-- **Files not copying**: Check the `SOURCE_FOLDER` and `DESTINATION_FOLDER` paths in the script.
+- **ffmpeg not found**: Make sure ffmpeg is installed and available in your system PATH.
+- **Permission errors**: Run your terminal as administrator (Windows) or use `sudo` (macOS/Linux) if needed.
+- **No files processed**: Check your folder path and minimum file size setting.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+*For questions or help, open an issue or contact the maintainer.*
 
